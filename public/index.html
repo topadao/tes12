@@ -5,26 +5,41 @@
   <title>Checkout Pix SyncPay</title>
 </head>
 <body>
-  <h1>QR Code Pix</h1>
-  <button onclick="gerarQr()">Gerar QR Code</button>
-  <div id="resultado"></div>
+  <h1>Checkout Pix</h1>
+  <form id="checkout-form">
+    <label>Nome: <input type="text" name="name" required></label><br>
+    <label>CPF: <input type="text" name="cpf" required></label><br>
+    <button type="submit">Gerar QR Code</button>
+  </form>
+  <div id="qrcode"></div>
 
   <script>
-    async function gerarQr() {
-      const res = await fetch('/checkout');
-      const data = await res.json();
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
 
-      if (data.status === 'sucesso') {
-        document.getElementById('resultado').innerHTML = `
-          <p>Escaneie o QR Code abaixo para pagar:</p>
-          <img src="data:image/png;base64,${data.qrcode_base64}" alt="QR Code">
-          <p>Ou copie e cole o código Pix:</p>
-          <textarea rows="4" cols="50">${data.pix_copiaecola}</textarea>
+      // Apenas confirmar nome e CPF antes
+      if (!data.name || !data.cpf) {
+        alert('Preencha nome e CPF!');
+        return;
+      }
+
+      // Enviar pro backend (GET porque não precisa de valor)
+      const response = await fetch('/checkout');
+      const result = await response.json();
+
+      if (response.ok) {
+        document.getElementById('qrcode').innerHTML = `
+          <h2>QR Code para pagamento:</h2>
+          <img src="data:image/png;base64,${result.qrcode_base64}" alt="QR Code Pix">
+          <p>Copie e cole o código Pix:</p>
+          <textarea rows="4" cols="50" readonly>${result.pix_copiaecola}</textarea>
         `;
       } else {
-        alert('Erro: ' + data.mensagem);
+        alert('Erro: ' + result.mensagem);
       }
-    }
+    });
   </script>
 </body>
 </html>
