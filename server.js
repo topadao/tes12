@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000;
 const apiKeyBase64 = 'NTcyMzNkMGEwZTMxYTU1ODdlMTU5ZmRj';
 const gerarQrCodeUrl = 'https://api.syncpay.pro/v1/gateway/api/';
 
-// Servir arquivos estáticos (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
 async function gerarQrCode() {
@@ -27,7 +26,6 @@ async function gerarQrCode() {
   return response.data;
 }
 
-// Rota para gerar checkout
 app.get('/checkout', async (req, res) => {
   try {
     const data = await gerarQrCode();
