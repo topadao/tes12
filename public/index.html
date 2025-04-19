@@ -11,6 +11,7 @@
     <label>CPF: <input type="text" name="cpf" required></label><br>
     <button type="submit">Gerar QR Code</button>
   </form>
+
   <div id="qrcode"></div>
 
   <script>
@@ -19,21 +20,19 @@
       const formData = new FormData(e.target);
       const data = Object.fromEntries(formData.entries());
 
-      // Apenas confirmar nome e CPF antes
       if (!data.name || !data.cpf) {
         alert('Preencha nome e CPF!');
         return;
       }
 
-      // Enviar pro backend (GET porque não precisa de valor)
       const response = await fetch('/checkout');
       const result = await response.json();
 
       if (response.ok) {
         document.getElementById('qrcode').innerHTML = `
-          <h2>QR Code para pagamento:</h2>
+          <h2>QR Code:</h2>
           <img src="data:image/png;base64,${result.qrcode_base64}" alt="QR Code Pix">
-          <p>Copie e cole o código Pix:</p>
+          <p>Copia e Cola:</p>
           <textarea rows="4" cols="50" readonly>${result.pix_copiaecola}</textarea>
         `;
       } else {
