@@ -16,14 +16,21 @@ async function gerarQrCode() {
     description: "cred amigo"
   };
 
-  const response = await axios.post(gerarQrCodeUrl, payload, {
-    headers: {
-      'Authorization': `Basic ${apiKeyBase64}`,
-      'Content-Type': 'application/json'
-    }
-  });
+  try {
+    const response = await axios.post(gerarQrCodeUrl, payload, {
+      headers: {
+        'Authorization': `Basic ${apiKeyBase64}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-  return response.data;
+    console.log("✅ API respondeu:", response.data); // <-- log pra debug
+    return response.data;
+
+  } catch (error) {
+    console.error("❌ Erro na API:", error.response ? error.response.data : error.message);
+    throw error;
+  }
 }
 
 app.get('/checkout', async (req, res) => {
@@ -37,7 +44,6 @@ app.get('/checkout', async (req, res) => {
       qrcode_base64: data.qrcode
     });
   } catch (error) {
-    console.error("Erro ao gerar QR Code:", error.response ? error.response.data : error.message);
     res.status(500).json({ status: 'erro', mensagem: 'Falha ao gerar QR Code' });
   }
 });
