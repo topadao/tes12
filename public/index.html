@@ -1,1 +1,38 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout Pix Automático</title>
+</head>
+<body>
+  <h1>Pagamento via Pix</h1>
+  <div id="conteudo">
+    <p>Gerando QR Code...</p>
+  </div>
+
+  <script>
+    async function carregarQrCode() {
+      try {
+        const response = await fetch('/checkout');
+        const result = await response.json();
+
+        if (response.ok) {
+          document.getElementById('conteudo').innerHTML = `
+            <p>Escaneie o QR Code abaixo para pagar R$ ${result.valor}:</p>
+            <img src="data:image/png;base64,${result.qrcode_base64}" alt="QR Code Pix" width="200">
+            <p>Ou copie o código Pix:</p>
+            <textarea rows="4" cols="50" readonly>${result.pix_copiaecola}</textarea>
+          `;
+        } else {
+          document.getElementById('conteudo').innerHTML = `<p>Erro: ${result.mensagem}</p>`;
+        }
+      } catch (error) {
+        document.getElementById('conteudo').innerHTML = `<p>Erro ao carregar QR Code: ${error.message}</p>`;
+      }
+    }
+
+    carregarQrCode();
+  </script>
+</body>
+</html>
